@@ -1,7 +1,7 @@
 <?php
 session_start();
 if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
-    header('Location: index.php');
+    header('Location: /admin/');
     exit;
 }
 
@@ -12,21 +12,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $cert_id = $_POST['cert_id'];
     $expiry_date = $_POST['expiry_date'];
 
-    // Quick validation
-    if (!empty($user_id) && !empty($cert_id) && !empty($expiry_date)) {
-
-        $stmt = $conn->prepare("INSERT INTO inscripcion_oec (US_ID, CON_ID, IO_FECHA_CADUCIDAD, IO_ESTADO) VALUES (?, ?, ?, 'A')");
-        $stmt->bind_param("iis", $user_id, $cert_id, $expiry_date);
-
-        if ($stmt->execute()) {
-            header("Location: dashboard.php?success=cert_assigned");
-        } else {
-            header("Location: dashboard.php?error=cert_assign_failed");
-        }
-        $stmt->close();
-    } else {
-        header("Location: dashboard.php?error=missing_fields");
+    if (empty($user_id) || empty($cert_id) || empty($expiry_date)) {
+        header("Location: /admin/dashboard.php?error=missing_fields");
+        exit;
     }
-    $conn->close();
+
+    try {
+        $sql = "INSERT INTO inscripcion_oec (US_ID, CON_ID, IO_FECHA_CADUCIDAD, IO_ESTADO) VALUES (?, ?, ?, 'A')";
+        $stmt = $conn->prepare($sql);
+        $stmt->execute([$user_id, $cert_id, $expiry_date]);
+
+        header("Location: /admin/dashboard.php?success=cert_assigned");
+    } catch (PDOException $e) {
+        // In a real app, you would log this error
+        header("Location: /admin/dashboard.php?error=cert_assign_failed");
+    }
+    $conn = null;
 }
 ?>

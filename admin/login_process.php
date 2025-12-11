@@ -1,21 +1,26 @@
 <?php
 session_start();
-include '../includes/config.php'; // Include the new config file
+// This file does not need a database connection, only config
+include '../includes/config.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = $_POST['username'];
     $password = $_POST['password'];
 
+    // Use password_verify with the hash from config.php
     if ($username === ADMIN_USER && password_verify($password, ADMIN_PASS_HASH)) {
         $_SESSION['loggedin'] = true;
-        header('Location: dashboard.php');
+        // Redirect to the correct dashboard URL
+        header('Location: /admin/dashboard.php');
         exit;
     } else {
-        header('Location: index.php?error=1');
+        // Redirect back to the login page with an error
+        header('Location: /admin/?error=1');
         exit;
     }
 } else {
-    header('Location: index.php');
+    // If accessed directly, redirect to login
+    header('Location: /admin/');
     exit;
 }
 ?>

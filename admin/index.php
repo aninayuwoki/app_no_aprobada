@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <title>Admin Login</title>
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="/admin/css/style.css">
 </head>
 <body>
     <div class="login-container">
         <h2>Admin Login</h2>
-        <form action="login_process.php" method="post">
+        <form action="/admin/login_process.php" method="post">
             <label for="username">Usuario:</label>
             <input type="text" id="username" name="username" required>
             <label for="password">Contraseña:</label>

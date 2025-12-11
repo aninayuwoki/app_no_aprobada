@@ -1,27 +1,31 @@
 <?php
 session_start();
+// Redirect to login if not authenticated
 if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
-    header('Location: index.php');
+    header('Location: /admin/');
     exit;
 }
+// Include the new PDO database connection
 include '../includes/db_connection.php';
 
-// Fetch users for the dropdown
-$users_result = $conn->query("SELECT US_ID, US_NOMBRE, US_APELLIDO FROM usuario ORDER BY US_APELLIDO, US_NOMBRE");
+// Fetch users for the dropdown using PDO
+$user_stmt = $conn->query("SELECT US_ID, US_NOMBRE, US_APELLIDO FROM usuario ORDER BY US_APELLIDO, US_NOMBRE");
+$users = $user_stmt->fetchAll();
 
-// Fetch certifications for the dropdown
-$certs_result = $conn->query("SELECT CON_ID, CON_NOMBRE FROM certificaciones_oec WHERE CON_ESTADO = 'A' ORDER BY CON_NOMBRE");
+// Fetch certifications for the dropdown using PDO
+$cert_stmt = $conn->query("SELECT CON_ID, CON_NOMBRE FROM certificaciones_oec WHERE CON_ESTADO = 'A' ORDER BY CON_NOMBRE");
+$certs = $cert_stmt->fetchAll();
 ?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <title>Admin Dashboard</title>
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="/admin/css/style.css">
 </head>
 <body>
     <div class="container">
-        <a href="logout.php">Logout</a>
+        <a href="/admin/logout.php">Logout</a>
         <h1>Admin Dashboard</h1>
 
         <?php
@@ -56,7 +60,7 @@ $certs_result = $conn->query("SELECT CON_ID, CON_NOMBRE FROM certificaciones_oec
 
         <div class="form-section">
             <h2>Registrar Nuevo Usuario</h2>
-            <form action="add_user.php" method="post">
+            <form action="/admin/add_user.php" method="post">
                 <label for="cedula">Cédula:</label>
                 <input type="text" id="cedula" name="cedula" required>
                 <label for="nombre">Nombre:</label>
@@ -73,37 +77,33 @@ $certs_result = $conn->query("SELECT CON_ID, CON_NOMBRE FROM certificaciones_oec
 
         <div class="form-section">
             <h2>Asignar Certificación a Usuario</h2>
-            <form action="assign_certification.php" method="post">
+            <form action="/admin/assign_certification.php" method="post">
                 <label for="user_id">Usuario:</label>
                 <select name="user_id" id="user_id" required>
                     <option value="">-- Seleccione un Usuario --</option>
-                    <?php
-                    if ($users_result->num_rows > 0) {
-                        while($row = $users_result->fetch_assoc()) {
-                            echo "<option value='" . $row['US_ID'] . "'>" . htmlspecialchars($row['US_APELLIDO'] . ', ' . $row['US_NOMBRE']) . "</option>";
-                        }
-                    }
-                    ?>
+                    <?php foreach ($users as $user): ?>
+                        <option value="<?= htmlspecialchars($user['US_ID']) ?>">
+                            <?= htmlspecialchars($user['US_APELLIDO'] . ', ' . $user['US_NOMBRE']) ?>
+                        </option>
+                    <?php endforeach; ?>
                 </select>
 
                 <label for="cert_id">Certificación:</label>
                 <select name="cert_id" id="cert_id" required>
                     <option value="">-- Seleccione una Certificación --</option>
-                    <?php
-                    if ($certs_result->num_rows > 0) {
-                        while($row = $certs_result->fetch_assoc()) {
-                            echo "<option value='" . $row['CON_ID'] . "'>" . htmlspecialchars($row['CON_NOMBRE']) . "</option>";
-                        }
-                    }
-                    ?>
+                    <?php foreach ($certs as $cert): ?>
+                        <option value="<?= htmlspecialchars($cert['CON_ID']) ?>">
+                            <?= htmlspecialchars($cert['CON_NOMBRE']) ?>
+                        </option>
+                    <?php endforeach; ?>
                 </select>
 
                 <label for="expiry_date">Fecha de Caducidad:</label>
-                <input type="date" name="expiry_date" required>
+                <input type="date" name="expiry_date" id="expiry_date" required>
                 <button type="submit">Asignar Certificación</button>
             </form>
         </div>
     </div>
 </body>
 </html>
-<?php $conn->close(); ?>
+<?php $conn = null; // Close PDO connection ?>
