@@ -1,11 +1,11 @@
 <?php
 session_start();
 if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
-    header('Location: /admin/');
+    header('Location: index.php');
     exit;
 }
 
-include '../includes/db_connection.php';
+include __DIR__ . '/../includes/db_connection.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $cedula = $_POST['cedula'];
@@ -15,7 +15,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $telefono = $_POST['telefono'] ?? null;
 
     if (empty($cedula) || empty($nombre) || empty($apellido)) {
-        header("Location: /admin/dashboard.php?error=missing_fields");
+        header("Location: dashboard.php?error=missing_fields");
         exit;
     }
 
@@ -24,10 +24,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $stmt = $conn->prepare($sql);
         $stmt->execute([$cedula, $nombre, $apellido, $email, $telefono]);
 
-        header("Location: /admin/dashboard.php?success=user_added");
+        header("Location: dashboard.php?success=user_added");
     } catch (PDOException $e) {
-        // In a real app, you would log this error
-        header("Location: /admin/dashboard.php?error=user_add_failed");
+        header("Location: dashboard.php?error=user_add_failed");
     }
     $conn = null;
 }

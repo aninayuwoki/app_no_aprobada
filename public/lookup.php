@@ -4,17 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Resultados de Certificaciones</title>
-    <link rel="stylesheet" href="/public/css/style.css">
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
     <div class="container">
         <h1>Resultados de la Búsqueda</h1>
         <?php
-        // Always display errors for debugging
         ini_set('display_errors', 1);
         error_reporting(E_ALL);
 
-        include '../includes/db_connection.php';
+        // Use a robust path to include the connection file
+        include __DIR__ . '/../includes/db_connection.php';
 
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $cedula = $_POST['cedula'];
@@ -75,7 +75,7 @@
         }
         $conn = null;
         ?>
-        <a href="/public/">Volver a la consulta</a>
+        <a href="index.html">Volver a la consulta</a>
     </div>
 </body>
 </html>

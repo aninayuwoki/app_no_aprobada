@@ -2,11 +2,11 @@
 session_start();
 // Redirect to login if not authenticated
 if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
-    header('Location: /admin/');
+    header('Location: index.php');
     exit;
 }
-// Include the new PDO database connection
-include '../includes/db_connection.php';
+// Use a robust path to include the connection file
+include __DIR__ . '/../includes/db_connection.php';
 
 // Fetch users for the dropdown using PDO
 $user_stmt = $conn->query("SELECT US_ID, US_NOMBRE, US_APELLIDO FROM usuario ORDER BY US_APELLIDO, US_NOMBRE");
@@ -21,11 +21,11 @@ $certs = $cert_stmt->fetchAll();
 <head>
     <meta charset="UTF-8">
     <title>Admin Dashboard</title>
-    <link rel="stylesheet" href="/admin/css/style.css">
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
     <div class="container">
-        <a href="/admin/logout.php">Logout</a>
+        <a href="logout.php">Logout</a>
         <h1>Admin Dashboard</h1>
 
         <?php
@@ -60,7 +60,7 @@ $certs = $cert_stmt->fetchAll();
 
         <div class="form-section">
             <h2>Registrar Nuevo Usuario</h2>
-            <form action="/admin/add_user.php" method="post">
+            <form action="add_user.php" method="post">
                 <label for="cedula">Cédula:</label>
                 <input type="text" id="cedula" name="cedula" required>
                 <label for="nombre">Nombre:</label>
@@ -77,7 +77,7 @@ $certs = $cert_stmt->fetchAll();
 
         <div class="form-section">
             <h2>Asignar Certificación a Usuario</h2>
-            <form action="/admin/assign_certification.php" method="post">
+            <form action="assign_certification.php" method="post">
                 <label for="user_id">Usuario:</label>
                 <select name="user_id" id="user_id" required>
                     <option value="">-- Seleccione un Usuario --</option>
