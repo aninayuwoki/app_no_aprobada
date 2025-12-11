@@ -6,120 +6,104 @@ $db_file = __DIR__ . '/includes/db_connection.php';
 $db_example_file = __DIR__ . '/includes/db_connection.php.example';
 $config_file = __DIR__ . '/includes/config.php';
 $config_example_file = __DIR__ . '/includes/config.php.example';
-$db_name = 'sis_certifi_cpateec';
 
 // --- Estilos CSS ---
 echo <<<HTML
 <style>
-    body { font-family: sans-serif; background-color: #f4f4f9; color: #333; line-height: 1.6; padding: 20px; }
-    .container { max-width: 800px; margin: 0 auto; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-    h1, h2 { color: #0056b3; }
-    .status { padding: 10px; margin-bottom: 15px; border-radius: 4px; font-weight: bold; }
-    .ok { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
-    .error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
-    .info { background-color: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
-    code { background: #eee; padding: 2px 5px; border-radius: 3px; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; background-color: #f0f2f5; color: #1c1e21; line-height: 1.6; padding: 20px; }
+    .container { max-width: 800px; margin: 20px auto; background: #fff; padding: 25px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+    h1 { color: #1877f2; text-align: center; margin-bottom: 25px; }
+    h2 { color: #333; border-bottom: 2px solid #eee; padding-bottom: 10px; margin-top: 25px; }
+    .status { padding: 12px 15px; margin-bottom: 15px; border-radius: 6px; font-weight: 500; display: flex; align-items: center; }
+    .status::before { content: ''; display: inline-block; width: 20px; height: 20px; margin-right: 10px; background-size: contain; background-repeat: no-repeat; }
+    .ok { background-color: #eaf6ec; color: #135c24; border: 1px solid #c7e6d2; }
+    .ok::before { content: '✓'; color: #28a745; font-weight: bold; }
+    .error { background-color: #fdecea; color: #7c242e; border: 1px solid #f9d0d5; }
+    .error::before { content: '✗'; color: #dc3545; font-weight: bold; }
+    .info { background-color: #e5f3fe; color: #0c5460; border: 1px solid #bde5eb; font-size: 0.9em; }
+    code { background: #e9ebee; padding: 3px 6px; border-radius: 4px; font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace; }
     ul { padding-left: 20px; }
-    li { margin-bottom: 10px; }
+    li { margin-bottom: 12px; }
+    strong { color: #000; }
 </style>
 HTML;
 
 echo '<div class="container">';
-echo '<h1>Verificación del Entorno del Proyecto</h1>';
+echo '<h1>Diagnóstico del Entorno del Proyecto</h1>';
 
 $all_ok = true;
 
 // --- Verificación 1: Extensión PDO de PHP ---
 echo '<h2>Paso 1: Revisando la configuración de PHP</h2>';
 if (extension_loaded('pdo_mysql')) {
-    echo '<p class="status ok">¡Excelente! La extensión <code>pdo_mysql</code> está instalada y activada.</p>';
+    echo '<p class="status ok">La extensión <code>pdo_mysql</code> está instalada y activada.</p>';
 } else {
     $all_ok = false;
-    echo '<p class="status error"><strong>Error Crítico:</strong> La extensión <code>pdo_mysql</code> no está activada en tu instalación de PHP.</p>';
-    echo '<div class="info">';
-    echo '<strong>Solución:</strong><br>';
-    echo '1. Busca el archivo <code>php.ini</code> en tu computadora (generalmente en la carpeta de instalación de PHP).<br>';
-    echo '2. Ábrelo con un editor de texto.<br>';
-    echo '3. Busca la línea <code>;extension=pdo_mysql</code> y quítale el punto y coma (<code>;</code>) del inicio.<br>';
-    echo '4. Guarda el archivo y reinicia tu servidor web o la terminal donde ejecutas el comando <code>php -S</code>.';
-    echo '</div>';
+    echo '<p class="status error"><strong>Error Crítico:</strong> La extensión <code>pdo_mysql</code> no está activada.</p>';
+    echo '<div class="info"><strong>Solución:</strong> Busca tu archivo <code>php.ini</code> (en XAMPP, puedes encontrarlo desde el panel de control), y quita el punto y coma (<code>;</code>) de la línea <code>;extension=pdo_mysql</code>. Guarda y reinicia el servidor Apache.</div>';
 }
 
 // --- Verificación 2: Archivos de Configuración ---
 echo '<h2>Paso 2: Revisando los archivos de configuración</h2>';
 if (file_exists($db_file) && file_exists($config_file)) {
-    echo '<p class="status ok">¡Bien! Los archivos <code>db_connection.php</code> y <code>config.php</code> existen.</p>';
+    echo '<p class="status ok">Los archivos de configuración <code>db_connection.php</code> y <code>config.php</code> existen.</p>';
 } else {
     $all_ok = false;
-    echo '<p class="status error"><strong>Error:</strong> Falta uno o ambos archivos de configuración.</p>';
-    echo '<div class="info">';
-    echo '<strong>Solución:</strong><br>';
-    echo '1. Ve a la carpeta <code>includes/</code>.<br>';
-    echo '2. Copia <code>db_connection.php.example</code> y renómbralo a <code>db_connection.php</code>.<br>';
-    echo '3. Copia <code>config.php.example</code> y renómbralo a <code>config.php</code>.<br>';
-    echo '4. Asegúrate de editar <code>db_connection.php</code> con tu usuario y contraseña de la base de datos.';
-    echo '</div>';
+    echo '<p class="status error"><strong>Error:</strong> Falta el archivo <code>includes/db_connection.php</code> o <code>includes/config.php</code>.</p>';
+    echo '<div class="info"><strong>Solución:</strong> Asegúrate de haber renombrado los archivos <code>.example</code> a su versión sin <code>.example</code> dentro de la carpeta <code>includes</code>.</div>';
 }
 
 // --- Verificación 3: Conexión a la Base de Datos ---
 echo '<h2>Paso 3: Probando la conexión a la base de datos</h2>';
-if ($all_ok) {
+if (file_exists($db_file)) {
+    // Manually parse db_connection.php to show what's being used
+    $db_content = file_get_contents($db_file);
+    $db_user = preg_match('/\$username\s*=\s*"(.*)"/', $db_content, $matches) ? $matches[1] : '[No encontrado]';
+    $db_pass_len = preg_match('/\$password\s*=\s*"(.*)"/', $db_content, $matches) ? strlen($matches[1]) : 0;
+    $db_name = preg_match('/\$dbname\s*=\s*"(.*)"/', $db_content, $matches) ? $matches[1] : '[No encontrado]';
+
+    echo "<p class='status info'>Intentando conectar a la base de datos <code>$db_name</code> con el usuario <code>$db_user</code>...</p>";
+
     try {
-        include $db_file;
+        include $db_file; // This will define $conn
         if ($conn) {
             echo '<p class="status ok">¡Conexión exitosa a la base de datos!</p>';
-
-            // --- Verificación 4: Existencia de la base de datos y tablas ---
-            $stmt = $conn->query("SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = '$db_name'");
-            if ($stmt->fetch()) {
-                echo '<p class="status ok">La base de datos <code>' . $db_name . '</code> existe.</p>';
-
-                $tables = ['usuario', 'certificaciones_oec', 'inscripcion_oec'];
-                $tables_ok = true;
-                foreach ($tables as $table) {
-                    $stmt = $conn->query("SHOW TABLES LIKE '$table'");
-                    if (!$stmt->fetch()) {
-                        $tables_ok = false;
-                        $all_ok = false;
-                        echo "<p class='status error'>La tabla <code>$table</code> no se encontró en la base de datos.</p>";
-                    }
-                }
-                if($tables_ok) {
-                     echo '<p class="status ok">Todas las tablas necesarias existen.</p>';
-                } else {
-                    echo '<div class="info"><strong>Solución:</strong> Asegúrate de haber importado correctamente el archivo <code>BDPARCIAL2.sql</code>.</div>';
-                }
-
+            $stmt = $conn->query("SHOW TABLES");
+            if($stmt->rowCount() > 0){
+                echo '<p class="status ok">La base de datos contiene tablas. La importación parece correcta.</p>';
             } else {
                 $all_ok = false;
-                echo '<p class="status error">La base de datos <code>' . $db_name . '</code> no existe.</p>';
-                echo '<div class="info"><strong>Solución:</strong> Crea la base de datos e importa el archivo <code>BDPARCIAL2.sql</code>.</div>';
+                echo '<p class="status error"><strong>Error:</strong> La base de datos está vacía.</p>';
+                echo '<div class="info"><strong>Solución:</strong> Asegúrate de haber importado el archivo <code>BDPARCIAL2.sql</code> a la base de datos <code>' . $db_name . '</code>.</div>';
             }
         }
     } catch (PDOException $e) {
         $all_ok = false;
         echo '<p class="status error"><strong>Error de Conexión:</strong> ' . htmlspecialchars($e->getMessage()) . '</p>';
         echo '<div class="info">';
-        echo '<strong>Solución:</strong><br>';
-        echo '1. Asegúrate de que tu servidor de base de datos (MySQL/MariaDB) esté corriendo.<br>';
-        echo '2. Revisa que el usuario y la contraseña en <code>includes/db_connection.php</code> sean correctos.<br>';
-        echo '3. Verifica que hayas creado el usuario <code>app_user</code> con los permisos adecuados, como se indicó en las instrucciones.';
+        echo '<strong>Posibles Soluciones:</strong><br>';
+        echo '<ul>';
+        echo '<li><b>Firewall:</b> Revisa que el Firewall de Windows o tu antivirus no esté bloqueando el puerto 3306. Intenta desactivarlo temporalmente para la prueba.</li>';
+        echo '<li><b>Credenciales:</b> Confirma que el usuario <code>' . $db_user . '</code> y su contraseña (longitud: ' . $db_pass_len . ' caracteres) en <code>includes/db_connection.php</code> son correctos.</li>';
+        echo '<li><b>Servidor de BD:</b> Asegúrate de que el servicio MySQL/MariaDB esté iniciado en XAMPP.</li>';
+        echo '</ul>';
         echo '</div>';
     }
 } else {
-    echo '<p class="status info">La prueba de conexión se omitió porque faltan configuraciones previas.</p>';
+    $all_ok = false;
+    echo '<p class="status info">La prueba de conexión se omitió porque el archivo <code>db_connection.php</code> no existe.</p>';
 }
 
 // --- Resumen Final ---
-echo '<h2>Resumen</h2>';
+echo '<h2>Resumen Final</h2>';
 if ($all_ok) {
-    echo '<p class="status ok">¡Todo parece estar configurado correctamente! El proyecto debería funcionar.</p>';
+    echo '<p class="status ok">¡Excelente! Tu entorno parece estar listo. La aplicación debería funcionar.</p>';
     echo '<ul>';
-    echo '<li><a href="/public/" target="_blank">Ir a la página de consulta pública</a></li>';
-    echo '<li><a href="/admin/" target="_blank">Ir al panel de administrador</a> (Usuario: <code>admin</code>, Contraseña: <code>password</code>)</li>';
+    echo '<li><a href="/public/" target="_blank">Probar la página de consulta pública</a></li>';
+    echo '<li><a href="/admin/" target="_blank">Probar el panel de administrador</a> (Usuario: <code>admin</code>, Contraseña: <code>password</code>)</li>';
     echo '</ul>';
 } else {
-    echo '<p class="status error">Se encontraron problemas en la configuración. Por favor, revisa los mensajes de error de arriba y sigue las soluciones propuestas.</p>';
+    echo '<p class="status error">Se han encontrado uno o más problemas críticos. Por favor, revisa los errores de arriba y aplica las soluciones sugeridas.</p>';
 }
 
 echo '</div>';
