@@ -19,8 +19,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     try {
         $sql = "INSERT INTO inscripcion_oec (US_ID, CON_ID, IO_FECHA_CADUCIDAD, IO_ESTADO) VALUES (?, ?, ?, 'A')";
-        $stmt = a
-        $conn->prepare($sql);
+        $stmt = $conn->prepare($sql);
         $stmt->execute([$user_id, $cert_id, $expiry_date]);
 
         header("Location: dashboard.php?success=cert_assigned");
