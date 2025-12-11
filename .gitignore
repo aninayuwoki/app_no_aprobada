@@ -1,0 +1,6 @@
+# Log files
+*.log
+
+# Configuration files
+includes/config.php
+includes/db_connection.php

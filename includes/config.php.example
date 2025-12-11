@@ -1,0 +1,5 @@
+<?php
+// Admin credentials - Replace with your own
+define('ADMIN_USER', 'admin');
+define('ADMIN_PASS_HASH', 'your_password_hash_here');
+?>
